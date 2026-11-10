@@ -1,4 +1,3 @@
-from pathlib import Path
 import joblib
 import pandas as pd
 import streamlit as st
@@ -11,13 +10,10 @@ st.set_page_config(
 )
 
 
-# Load the model directly (cached for performance)
+# Load the model directly
 @st.cache_resource
 def load_model():
-  # Adjust this path if your model folder is in a different location relative to this file
-  base_dir = Path(__file__).resolve().parent.parent
-  model_path = base_dir / "models" / "fraud_detection_model.pkl"
-  return joblib.load(model_path)
+  return joblib.load("fraud_detection_model.pkl")
 
 
 model = load_model()
@@ -59,9 +55,7 @@ with st.form("fraud_form"):
 
   submit_button = st.form_submit_button(label="Evaluate Transaction")
 
-# When the button is clicked, run the model prediction directly
 if submit_button:
-  # Create a DataFrame matching the model's expected input columns
   input_data = pd.DataFrame({
       "step": [step],
       "type": [trans_type],
@@ -73,10 +67,8 @@ if submit_button:
   })
 
   try:
-    # Run predictions directly using the loaded model object
     prediction = model.predict(input_data)[0]
 
-    # Get probabilities if the model supports it
     if hasattr(model, "predict_proba"):
       probabilities = model.predict_proba(input_data)[0]
       legit_probability = round(probabilities[0] * 100, 2)
@@ -85,7 +77,6 @@ if submit_button:
       fraud_probability = 100.0 if prediction == 1 else 0.0
       legit_probability = 100.0 - fraud_probability
 
-    # Determine risk level
     if fraud_probability > 75:
       risk_level = "High"
     elif fraud_probability > 40:
@@ -96,13 +87,11 @@ if submit_button:
     st.markdown("---")
     st.subheader("Evaluation Results")
 
-    # Display Alert Banner
     if prediction == 1 or prediction == "Fraudulent":
       st.error("🚨 **Alert: Fraudulent Transaction Detected!**")
     else:
       st.success("✅ **Transaction is Legitimate.**")
 
-    # Side-by-side metrics display
     col_m1, col_m2 = st.columns(2)
     with col_m1:
       st.metric(label="Legitimate Probability", value=f"{legit_probability}%")
