@@ -1,0 +1,11 @@
+Architecture
+PaySim transaction dataset
+-Historical transaction records
+Data Prrprocessing and feature engineering
+-Cleaning, transformation and fraud indicator
+Machine learning engine
+-Logistics Regression, Random Forest, XGBoost, Isolation Forest
+Train and evaluating model
+-save using joblib
+Streamlit web application
+-Dashboard, Transaction Analysis, Fraud Alert, Risk Score
